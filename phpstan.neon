@@ -13,3 +13,13 @@ parameters:
     # Répertoires exclus de l'analyse
     excludePaths:
         - bootstrap/cache/*
+
+    # Références de classes issues de packages compagnons optionnels non installés
+    # (media-library-pro, laravel-data) dans les fichiers de config publiés.
+    ignoreErrors:
+        -
+            message: '#Class Spatie\\MediaLibraryPro\\Models\\TemporaryUpload not found\.#'
+            path: config/media-library.php
+        -
+            message: '#Class Spatie\\LaravelData\\Data not found\.#'
+            path: config/settings.php
