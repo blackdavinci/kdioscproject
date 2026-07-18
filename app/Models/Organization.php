@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\OrganizationStatus;
+use App\Support\OrganizationNotificationSettings;
 use Database\Factories\OrganizationFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -49,6 +50,15 @@ class Organization extends Model implements HasMedia
     public function isActive(): bool
     {
         return $this->status === OrganizationStatus::Active;
+    }
+
+    /**
+     * Paramétrage « notifications » de l'organisation (expéditeur affiché, reply-to,
+     * SMS). Modèle centralisé : l'envoi effectif utilise le compte plateforme.
+     */
+    public function notificationSettings(): OrganizationNotificationSettings
+    {
+        return OrganizationNotificationSettings::fromOrganization($this);
     }
 
     public function registerMediaCollections(): void

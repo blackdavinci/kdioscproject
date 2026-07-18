@@ -1,5 +1,7 @@
 <?php
 
+use App\Settings\MailSettings;
+use App\Settings\SmsSettings;
 use Spatie\LaravelData\Data;
 use Spatie\LaravelSettings\SettingsCasts\DataCast;
 use Spatie\LaravelSettings\SettingsCasts\DateTimeInterfaceCast;
@@ -14,7 +16,8 @@ return [
      * put them (manually) here.
      */
     'settings' => [
-
+        MailSettings::class,
+        SmsSettings::class,
     ],
 
     /*
