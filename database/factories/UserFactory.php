@@ -1,7 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
+use App\Enums\UserStatus;
+use App\Models\Organization;
+use App\Models\TeamMember;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -12,34 +17,43 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
+    protected $model = User::class;
+
+    protected static ?string $password = null;
 
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'organization_id' => Organization::factory(),
+            // La fiche membre est créée dans la même organisation que le compte.
+            'team_member_id' => fn (array $attributes): string => TeamMember::factory()
+                ->create(['organization_id' => $attributes['organization_id']])
+                ->id,
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'phone' => fake()->phoneNumber(),
+            'locale' => 'fr',
+            'status' => UserStatus::Active,
             'remember_token' => Str::random(10),
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
+    public function invited(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
+        return $this->state(fn (): array => [
+            'status' => UserStatus::Invited,
+            'password' => null,
+        ]);
+    }
+
+    public function expired(): static
+    {
+        return $this->state(fn (): array => [
+            'status' => UserStatus::Expired,
+            'expires_at' => now()->subDay(),
         ]);
     }
 }

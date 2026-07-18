@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models\Concerns;
 
+use App\Models\Organization;
 use App\Tenancy\TenantContext;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * À appliquer sur tout modèle appartenant à une organisation (RG-01, RG-02).
@@ -14,9 +16,6 @@ use Illuminate\Database\Eloquent\Model;
  * - renseigne automatiquement `organization_id` à la création depuis le contexte
  *   de tenant courant, afin qu'aucune donnée ne puisse être créée « hors tenant »
  *   par omission.
- *
- * La relation `organization()` est ajoutée sur les modèles concrets une fois le
- * modèle Organization introduit (Spec 01).
  */
 trait BelongsToOrganization
 {
@@ -33,5 +32,13 @@ trait BelongsToOrganization
                 }
             }
         });
+    }
+
+    /**
+     * @return BelongsTo<Organization, $this>
+     */
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
     }
 }
