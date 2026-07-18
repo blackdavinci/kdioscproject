@@ -36,6 +36,7 @@ class Invitation extends Model
         return [
             'role' => UserRole::class,
             'expires_at' => 'datetime',
+            'account_expires_at' => 'datetime',
             'accepted_at' => 'datetime',
         ];
     }
@@ -59,5 +60,11 @@ class Invitation extends Model
     public function sentBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'sent_by');
+    }
+
+    /** @return BelongsTo<TeamMember, $this> */
+    public function teamMember(): BelongsTo
+    {
+        return $this->belongsTo(TeamMember::class);
     }
 }

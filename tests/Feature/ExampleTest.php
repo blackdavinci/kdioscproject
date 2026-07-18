@@ -1,5 +1,5 @@
 <?php
 
-test('la page d’accueil répond', function () {
-    $this->get('/')->assertStatus(200);
+test('la racine redirige vers le panel de l’organisation', function () {
+    $this->get('/')->assertRedirect('/app');
 });
