@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\ApplyTenantState;
+use App\Models\Organization;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -31,8 +33,10 @@ class AppPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            // La tenancy (->tenant(Organization::class)) est branchée en Spec 01,
-            // une fois le modèle Organization créé.
+            ->tenant(Organization::class)
+            ->tenantMiddleware([
+                ApplyTenantState::class,
+            ], isPersistent: true)
             ->brandName('KIDIANI OSC')
             ->discoverResources(in: app_path('Filament/App/Resources'), for: 'App\Filament\App\Resources')
             ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\Filament\App\Pages')

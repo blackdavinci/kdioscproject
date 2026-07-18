@@ -27,6 +27,7 @@ class AdminPanelProvider extends PanelProvider
             // Panel super-admin plateforme (KIDIANI), hors tenancy — RG-14.
             ->id('admin')
             ->path('admin')
+            ->authGuard('platform')
             ->login()
             ->brandName('KIDIANI OSC — Administration')
             ->colors([
