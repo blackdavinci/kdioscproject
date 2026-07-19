@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\OrganizationStatus;
+use App\Enums\SuspensionSource;
+use App\Models\Billing\Subscription;
 use App\Support\OrganizationNotificationSettings;
 use Database\Factories\OrganizationFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -50,6 +53,7 @@ class Organization extends Model implements HasMedia
             'contacts' => 'array',
             'settings' => 'array',
             'status' => OrganizationStatus::class,
+            'suspended_source' => SuspensionSource::class,
             'fiscal_year_start' => 'integer',
         ];
     }
@@ -107,5 +111,11 @@ class Organization extends Model implements HasMedia
     public function invitations(): HasMany
     {
         return $this->hasMany(Invitation::class);
+    }
+
+    /** @return HasOne<Subscription, $this> */
+    public function subscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class);
     }
 }
