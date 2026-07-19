@@ -20,6 +20,10 @@ class EnsureAdminTwoFactor
 {
     public function handle(Request $request, Closure $next): Response
     {
+        if (! config('kdiosc.enforce_admin_two_factor')) {
+            return $next($request);
+        }
+
         $user = Filament::auth()->user();
 
         if (! $user instanceof User || ! $user->hasRole('admin') || $user->hasConfirmedTwoFactor()) {
