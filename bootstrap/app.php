@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Le webhook Djomy est authentifié par signature HMAC, pas par jeton CSRF.
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/djomy',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
