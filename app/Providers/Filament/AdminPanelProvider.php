@@ -36,6 +36,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Indigo,
             ])
+            ->viteTheme('resources/css/filament/app/theme.css')
             ->plugins([
                 // Santé de la plateforme et sauvegardes (§5, écran 10).
                 FilamentSpatieLaravelHealthPlugin::make(),
