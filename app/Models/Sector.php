@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\LogsTenantActivity;
 use App\Models\Concerns\NationalOrOrganizationScope;
 use App\Tenancy\TenantContext;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Sector extends Model
 {
     use HasUlids;
+    use LogsTenantActivity;
     use SoftDeletes;
 
     protected $guarded = ['id'];

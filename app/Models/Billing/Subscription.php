@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Billing;
 
 use App\Enums\SubscriptionStatus;
+use App\Models\Concerns\LogsTenantActivity;
 use App\Models\Organization;
 use Database\Factories\Billing\SubscriptionFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -30,6 +31,7 @@ class Subscription extends Model
     use HasFactory;
 
     use HasUlids;
+    use LogsTenantActivity;
 
     protected $guarded = ['id'];
 

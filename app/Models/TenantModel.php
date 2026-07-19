@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Concerns\BelongsToOrganization;
+use App\Models\Concerns\LogsTenantActivity;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -24,5 +25,6 @@ abstract class TenantModel extends Model
 {
     use BelongsToOrganization;
     use HasUlids;
+    use LogsTenantActivity;
     use SoftDeletes;
 }

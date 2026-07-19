@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\OrganizationStatus;
 use App\Enums\SuspensionSource;
 use App\Models\Billing\Subscription;
+use App\Models\Concerns\LogsTenantActivity;
 use App\Support\OrganizationNotificationSettings;
 use Database\Factories\OrganizationFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -36,6 +37,7 @@ class Organization extends Model implements HasMedia
 
     use HasUlids;
     use InteractsWithMedia;
+    use LogsTenantActivity;
     use SoftDeletes;
 
     protected $guarded = ['id'];

@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Tenancy\TenantContext;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
+use Spatie\Activitylog\Support\CauserResolver;
 use Spatie\Health\Checks\Checks\CacheCheck;
 use Spatie\Health\Checks\Checks\DatabaseCheck;
 use Spatie\Health\Checks\Checks\DebugModeCheck;
@@ -28,6 +30,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Auteur d'une activité d'audit (RG-26) : compte tenant (web) ou super-admin (platform).
+        app(CauserResolver::class)->resolveUsing(
+            fn () => Auth::guard('web')->user() ?? Auth::guard('platform')->user(),
+        );
+
         // Contrôles de santé de la plateforme (panel super-admin, §5 écran 10).
         Health::checks([
             UsedDiskSpaceCheck::new(),

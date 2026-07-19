@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\UserStatus;
 use App\Models\Concerns\BelongsToOrganization;
+use App\Models\Concerns\LogsTenantActivity;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
@@ -42,6 +43,7 @@ class User extends Authenticatable implements FilamentUser, HasName, HasTenants
 
     use HasRoles;
     use HasUlids;
+    use LogsTenantActivity;
     use Notifiable;
     use SoftDeletes;
 

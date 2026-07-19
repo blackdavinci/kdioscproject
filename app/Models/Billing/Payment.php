@@ -6,6 +6,7 @@ namespace App\Models\Billing;
 
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
+use App\Models\Concerns\LogsTenantActivity;
 use App\Models\Organization;
 use App\Models\PlatformUser;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -27,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Payment extends Model
 {
     use HasUlids;
+    use LogsTenantActivity;
 
     protected $table = 'billing_payments';
 

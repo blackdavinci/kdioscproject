@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Billing;
 
 use App\Enums\InvoiceStatus;
+use App\Models\Concerns\LogsTenantActivity;
 use App\Models\Organization;
 use Database\Factories\Billing\InvoiceFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -35,6 +36,7 @@ class Invoice extends Model
     use HasFactory;
 
     use HasUlids;
+    use LogsTenantActivity;
 
     protected $guarded = ['id'];
 
