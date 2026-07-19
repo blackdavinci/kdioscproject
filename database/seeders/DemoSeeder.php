@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Actions\Billing\CreateSubscription;
 use App\Enums\DonorType;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
@@ -34,7 +35,7 @@ class DemoSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->callOnce([RolesSeeder::class]);
+        $this->callOnce([RolesSeeder::class, BillingSeeder::class]);
 
         if (GeoUnit::count() === 0) {
             Artisan::call('geo:import');
@@ -68,6 +69,8 @@ class DemoSeeder extends Seeder
             ['name' => $name],
             ['sigle' => $sigle, 'currency' => 'GNF', 'fiscal_year_start' => 1, 'contacts' => ['email' => "contact@{$domain}"]],
         );
+
+        (new CreateSubscription)->handle($organization);
 
         app(TenantContext::class)->set($organization->id);
         app(PermissionRegistrar::class)->setPermissionsTeamId($organization->id);

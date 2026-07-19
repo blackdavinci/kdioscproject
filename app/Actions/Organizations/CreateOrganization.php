@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Actions\Organizations;
 
+use App\Actions\Billing\CreateSubscription;
 use App\Actions\Invitations\SendInvitation;
 use App\Enums\UserRole;
+use App\Models\Billing\Plan;
 use App\Models\Invitation;
 use App\Models\Organization;
 use Illuminate\Support\Facades\DB;
@@ -31,6 +33,11 @@ class CreateOrganization
     ): array {
         return DB::transaction(function () use ($attributes, $adminEmail, $adminFullName, $adminPhone): array {
             $organization = Organization::create($attributes);
+
+            // Abonnement d'essai créé si un plan actif existe (RGF-04).
+            if (Plan::query()->where('is_active', true)->exists()) {
+                (new CreateSubscription)->handle($organization);
+            }
 
             $invitation = (new SendInvitation)->handle(
                 $organization,
