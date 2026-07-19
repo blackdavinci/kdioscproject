@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasLabel;
+
 /**
  * Les 7 rôles fixes d'une organisation (RG-12/13). Un utilisateur a exactement
  * un rôle. Les rôles temporaires (consultant, bailleur) exigent une expiration (RG-10).
  */
-enum UserRole: string
+enum UserRole: string implements HasLabel
 {
     case Admin = 'admin';
     case ChefProjet = 'chef_projet';
@@ -29,6 +31,11 @@ enum UserRole: string
             self::Consultant => 'Consultant',
             self::Bailleur => 'Bailleur',
         };
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label();
     }
 
     /**
