@@ -25,6 +25,9 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property string $id
  * @property string $name
  * @property OrganizationStatus $status
+ * @property SuspensionSource|null $suspended_source
+ * @property array<string, mixed>|null $contacts
+ * @property array<string, mixed>|null $settings
  */
 class Organization extends Model implements HasMedia
 {
