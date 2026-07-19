@@ -45,6 +45,11 @@ class Project extends Model
 
     protected $guarded = ['id'];
 
+    /** @var array<string, mixed> */
+    protected $attributes = [
+        'status' => ProjectStatus::Brouillon->value,
+    ];
+
     /**
      * @return array<string, string>
      */
