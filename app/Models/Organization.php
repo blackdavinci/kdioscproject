@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -25,6 +26,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  *
  * @property string $id
  * @property string $name
+ * @property string|null $slug
  * @property OrganizationStatus $status
  * @property SuspensionSource|null $suspended_source
  * @property array<string, mixed>|null $contacts
@@ -66,6 +68,32 @@ class Organization extends Model implements HasMedia
     public function isActive(): bool
     {
         return $this->status === OrganizationStatus::Active;
+    }
+
+    /**
+     * Sous-domaine dédié prévu pour l'organisation (ex. ablogui.kidiani.com).
+     */
+    public function subdomainUrl(): ?string
+    {
+        return $this->slug !== null
+            ? $this->slug.'.'.(string) config('app.tenant_domain', 'kidiani.com')
+            : null;
+    }
+
+    /**
+     * Génère un slug unique à partir d'un libellé (base du sous-domaine).
+     */
+    public static function makeUniqueSlug(string $base): string
+    {
+        $slug = Str::slug($base) ?: 'osc';
+        $candidate = $slug;
+        $i = 1;
+
+        while (self::query()->where('slug', $candidate)->exists()) {
+            $candidate = $slug.'-'.(++$i);
+        }
+
+        return $candidate;
     }
 
     /**

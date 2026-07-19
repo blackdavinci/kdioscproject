@@ -32,6 +32,12 @@ class CreateOrganization
         ?string $adminPhone = null,
     ): array {
         return DB::transaction(function () use ($attributes, $adminEmail, $adminFullName, $adminPhone): array {
+            // Slug (sous-domaine dédié) dérivé du nom si non fourni.
+            if (empty($attributes['slug'])) {
+                $base = is_string($attributes['name'] ?? null) ? $attributes['name'] : 'osc';
+                $attributes['slug'] = Organization::makeUniqueSlug($base);
+            }
+
             $organization = Organization::create($attributes);
 
             // Abonnement d'essai créé si un plan actif existe (RGF-04).

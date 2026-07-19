@@ -20,6 +20,7 @@ use App\Tenancy\TenantContext;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Spatie\Permission\PermissionRegistrar;
 
 /**
@@ -53,7 +54,7 @@ class DemoSeeder extends Seeder
     {
         $organization = Organization::firstOrCreate(
             ['name' => $name],
-            ['sigle' => $sigle, 'currency' => 'GNF', 'fiscal_year_start' => 1, 'contacts' => ['email' => "contact@{$domain}"]],
+            ['sigle' => $sigle, 'slug' => Str::slug($name), 'currency' => 'GNF', 'fiscal_year_start' => 1, 'contacts' => ['email' => "contact@{$domain}"]],
         );
 
         (new CreateSubscription)->handle($organization);

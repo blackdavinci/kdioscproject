@@ -69,6 +69,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Domaine des sous-domaines de tenant
+    |--------------------------------------------------------------------------
+    |
+    | Domaine racine sous lequel chaque organisation dispose de son sous-domaine
+    | dédié (ex. ablogui.kidiani.com). La résolution effective par sous-domaine
+    | est une étape d'infrastructure ultérieure.
+    |
+    */
+
+    'tenant_domain' => env('APP_TENANT_DOMAIN', 'kidiani.com'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     |

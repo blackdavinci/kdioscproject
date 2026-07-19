@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\App\Pages\Tenancy\EditOrganizationProfile;
 use App\Http\Middleware\ApplyTenantState;
 use App\Models\Organization;
 use Filament\Http\Middleware\Authenticate;
@@ -34,6 +35,7 @@ class AppPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->tenant(Organization::class)
+            ->tenantProfile(EditOrganizationProfile::class)
             ->tenantMiddleware([
                 ApplyTenantState::class,
             ], isPersistent: true)
