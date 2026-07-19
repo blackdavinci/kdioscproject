@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Enums\DonorType;
 use App\Models\Donor;
+use App\Models\ProjectRole;
 use App\Models\Sector;
 use App\Tenancy\TenantContext;
 use Illuminate\Database\Seeder;
@@ -45,6 +46,13 @@ class NationalReferentialsSeeder extends Seeder
                 ['organization_id' => null, 'name' => $name],
                 ['sigle' => $sigle, 'type' => $type],
             );
+        }
+
+        // Rôles projet nationaux (RGP-12), extensibles par chaque OSC.
+        $projectRoles = ['Chef de projet', 'Coordinateur', 'Membre de l’équipe', 'Appui suivi-évaluation', 'Appui financier', 'Point focal terrain', 'Animateur', 'Superviseur'];
+
+        foreach ($projectRoles as $name) {
+            ProjectRole::firstOrCreate(['organization_id' => null, 'name' => $name]);
         }
     }
 }
