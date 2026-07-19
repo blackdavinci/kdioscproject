@@ -13,5 +13,12 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolesSeeder::class,
         ]);
+
+        // En développement, peuple aussi 2 organisations de démonstration.
+        if (app()->environment('local')) {
+            $this->call([
+                DemoSeeder::class,
+            ]);
+        }
     }
 }
