@@ -47,7 +47,7 @@ class AppPanelProvider extends PanelProvider
             ->plugins([
                 // Mon profil + 2FA (proposée à tous, imposée aux admins via EnsureAdminTwoFactor, RG-09).
                 BreezyCore::make()
-                    ->myProfile(shouldRegisterUserMenu: true, userMenuLabel: 'Mon profil')
+                    ->myProfile(shouldRegisterUserMenu: true, hasAvatars: true, userMenuLabel: 'Mon profil')
                     ->enableTwoFactorAuthentication(),
             ])
             // Bandeau persistant d'accès d'assistance (RG-14).

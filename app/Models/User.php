@@ -9,6 +9,7 @@ use App\Models\Concerns\BelongsToOrganization;
 use App\Models\Concerns\LogsTenantActivity;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
@@ -21,6 +22,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -34,8 +36,9 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $email
  * @property UserStatus $status
  * @property Carbon|null $expires_at
+ * @property string|null $avatar_url
  */
-class User extends Authenticatable implements FilamentUser, HasName, HasTenants
+class User extends Authenticatable implements FilamentUser, HasAvatar, HasName, HasTenants
 {
     use BelongsToOrganization;
 
@@ -99,6 +102,11 @@ class User extends Authenticatable implements FilamentUser, HasName, HasTenants
         $teamMember = $this->teamMember;
 
         return $teamMember instanceof TeamMember ? $teamMember->full_name : $this->email;
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->avatar_url ? Storage::disk('public')->url($this->avatar_url) : null;
     }
 
     public function canAccessPanel(Panel $panel): bool

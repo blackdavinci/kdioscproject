@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Database\Factories\PlatformUserFactory;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 
 /**
@@ -22,8 +24,9 @@ use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
  * @property string $id
  * @property string $name
  * @property string $email
+ * @property string|null $avatar_url
  */
-class PlatformUser extends Authenticatable implements FilamentUser, HasName
+class PlatformUser extends Authenticatable implements FilamentUser, HasAvatar, HasName
 {
     /** @use HasFactory<PlatformUserFactory> */
     use HasFactory;
@@ -60,6 +63,11 @@ class PlatformUser extends Authenticatable implements FilamentUser, HasName
     public function getFilamentName(): string
     {
         return $this->name;
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->avatar_url ? Storage::disk('public')->url($this->avatar_url) : null;
     }
 
     public function canAccessPanel(Panel $panel): bool

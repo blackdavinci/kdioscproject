@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\EnsureSuperAdminTwoFactor;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -41,10 +42,12 @@ class AdminPanelProvider extends PanelProvider
                 // Santé de la plateforme et sauvegardes (§5, écran 10).
                 FilamentSpatieLaravelHealthPlugin::make(),
                 FilamentSpatieLaravelBackupPlugin::make(),
-                // Mon profil + 2FA obligatoire pour le super-admin (RG-09).
+                // Mon profil (nom, mot de passe, photo) + 2FA obligatoire pour le
+                // super-admin (RG-09), imposée via EnsureSuperAdminTwoFactor plutôt
+                // que le « force » de Breezy afin de garder toutes les sections visibles.
                 BreezyCore::make()
-                    ->myProfile(shouldRegisterUserMenu: true, userMenuLabel: 'Mon profil')
-                    ->enableTwoFactorAuthentication(force: true),
+                    ->myProfile(shouldRegisterUserMenu: true, hasAvatars: true, userMenuLabel: 'Mon profil')
+                    ->enableTwoFactorAuthentication(),
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')
@@ -69,6 +72,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                EnsureSuperAdminTwoFactor::class,
             ]);
     }
 }
