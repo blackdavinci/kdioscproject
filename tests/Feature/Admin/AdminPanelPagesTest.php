@@ -10,8 +10,8 @@ beforeEach(function (): void {
     $this->actingAs($superAdmin, 'platform')->withSession(validTwoFactorSession($session));
 });
 
-it('affiche le référentiel géographique au super-admin', function (): void {
-    $this->get('/admin/geo-referential')->assertOk()->assertSee('Référentiel géographique national');
+it('affiche l’écran d’import du référentiel géographique au super-admin', function (): void {
+    $this->get('/admin/geo-referential')->assertOk()->assertSee('Import du référentiel géographique national');
 });
 
 it('affiche les pages Santé et Sauvegardes au super-admin (§5 écran 10)', function (): void {

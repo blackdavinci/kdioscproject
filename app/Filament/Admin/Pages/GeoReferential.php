@@ -12,6 +12,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Artisan;
+use UnitEnum;
 
 /**
  * Écran super-admin du référentiel géographique national COD-AB (§5, écran 9).
@@ -21,13 +22,15 @@ class GeoReferential extends Page
 {
     protected string $view = 'filament.admin.pages.geo-referential';
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMapPin;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowDownTray;
 
-    protected static ?string $navigationLabel = 'Référentiel géographique';
+    protected static string|UnitEnum|null $navigationGroup = 'Référentiel géographique';
 
-    protected static ?string $title = 'Référentiel géographique national';
+    protected static ?string $navigationLabel = 'Import COD-AB';
 
-    protected static ?int $navigationSort = 8;
+    protected static ?string $title = 'Import du référentiel géographique national';
+
+    protected static ?int $navigationSort = 2;
 
     protected function getHeaderActions(): array
     {
