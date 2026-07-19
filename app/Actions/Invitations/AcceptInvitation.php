@@ -7,16 +7,15 @@ namespace App\Actions\Invitations;
 use App\Enums\UserStatus;
 use App\Exceptions\InvitationException;
 use App\Models\Invitation;
-use App\Models\TeamMember;
 use App\Models\User;
 use App\Tenancy\TenantContext;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * Accepte une invitation (RG-16/17) : crée le compte et sa fiche membre dans la même
- * transaction, ou rattache le compte à une fiche existante (prévention des doublons).
- * Assigne le rôle dans le contexte de l'organisation et marque l'invitation acceptée.
+ * Accepte une invitation (RG-07) : active le compte créé à l'invitation (mot de passe
+ * défini, statut passé à `active`), renseigne le vrai nom sur la fiche membre et marque
+ * l'invitation acceptée.
  */
 class AcceptInvitation
 {
@@ -29,37 +28,24 @@ class AcceptInvitation
             throw InvitationException::notAcceptable();
         }
 
-        // Fiche pré-choisie par l'admin à l'invitation (RG-16), le cas échéant.
-        $linkTo = $invitation->teamMember;
-
-        if ($linkTo !== null && $linkTo->user_id !== null) {
-            throw InvitationException::teamMemberAlreadyLinked();
-        }
-
-        return DB::transaction(function () use ($invitation, $password, $linkTo, $fullName): User {
+        return DB::transaction(function () use ($invitation, $password, $fullName): User {
             app(TenantContext::class)->set($invitation->organization_id);
-            setPermissionsTeamId($invitation->organization_id);
 
-            $teamMember = $linkTo ?? TeamMember::create([
-                'organization_id' => $invitation->organization_id,
-                'full_name' => $fullName ?? $invitation->email,
-            ]);
+            $user = User::withoutGlobalScopes()
+                ->where('organization_id', $invitation->organization_id)
+                ->where('email', $invitation->email)
+                ->firstOrFail();
 
-            $user = new User([
-                'email' => $invitation->email,
+            $user->forceFill([
                 'password' => Hash::make($password),
-                'locale' => 'fr',
                 'status' => UserStatus::Active,
                 'expires_at' => $invitation->account_expires_at,
-            ]);
-            $user->organization_id = $invitation->organization_id;
-            $user->team_member_id = $teamMember->getKey();
-            $user->save();
+            ])->save();
 
-            // Lien réciproque fiche ↔ compte (RG-16).
-            $teamMember->forceFill(['user_id' => $user->getKey()])->save();
-
-            $user->assignRole($invitation->role->value);
+            // Renseigne le vrai nom si l'invité l'a fourni (la fiche portait l'e-mail).
+            if ($fullName !== null && $fullName !== '') {
+                $user->teamMember?->forceFill(['full_name' => $fullName])->save();
+            }
 
             $invitation->forceFill(['accepted_at' => now()])->save();
 

@@ -36,6 +36,12 @@ it('émet une invitation avec lien 72 h et envoie l’e-mail (RG-07)', function 
         ->and($invitation->expires_at->between(now()->addHours(71), now()->addHours(73)))->toBeTrue()
         ->and($invitation->token_hash)->not->toBeEmpty();
 
+    // Le compte et sa fiche existent dès l'invitation, en statut invited (§3/§4, RG-17).
+    $user = User::withoutGlobalScopes()->where('email', 'nouvel.admin@example.com')->sole();
+    expect($user->status)->toBe(UserStatus::Invited)
+        ->and($user->password)->toBeNull()
+        ->and($user->team_member_id)->not->toBeNull();
+
     Mail::assertSent(InvitationMail::class);
 });
 
