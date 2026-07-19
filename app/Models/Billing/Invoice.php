@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * Facture d'abonnement (RGF-06).
@@ -22,6 +23,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $number
  * @property int $amount_gnf
  * @property InvoiceStatus $status
+ * @property Carbon $due_date
+ * @property Carbon $period_start
+ * @property Carbon $period_end
+ * @property Carbon $issued_at
+ * @property Carbon|null $paid_at
  */
 class Invoice extends Model
 {

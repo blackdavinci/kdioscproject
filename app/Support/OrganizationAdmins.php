@@ -7,6 +7,7 @@ namespace App\Support;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Models\User;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -39,6 +40,34 @@ class OrganizationAdmins
             ->where('users.status', UserStatus::Active->value)
             ->whereNull('users.deleted_at')
             ->count();
+    }
+
+    /**
+     * Administrateurs actifs d'une organisation (destinataires des relances, RGF-10).
+     *
+     * @return Collection<int, User>
+     */
+    public function activeAdmins(string $organizationId): Collection
+    {
+        $adminRoleId = Role::query()
+            ->where('name', UserRole::Admin->value)
+            ->where('guard_name', 'web')
+            ->value('id');
+
+        if ($adminRoleId === null) {
+            return collect();
+        }
+
+        $ids = DB::table('model_has_roles')
+            ->where('role_id', $adminRoleId)
+            ->where('organization_id', $organizationId)
+            ->where('model_type', (new User)->getMorphClass())
+            ->pluck('model_id');
+
+        return User::query()
+            ->whereIn('id', $ids)
+            ->where('status', UserStatus::Active->value)
+            ->get();
     }
 
     public function isLastActiveAdmin(User $user): bool

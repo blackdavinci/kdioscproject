@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Actions\Billing\AdvanceSubscriptionLifecycle;
+use App\Actions\Billing\SendRenewalReminders;
 use Illuminate\Console\Command;
 
 /**
@@ -20,8 +21,9 @@ class AdvanceBilling extends Command
     public function handle(): int
     {
         $result = (new AdvanceSubscriptionLifecycle)->handle();
+        $reminders = (new SendRenewalReminders)->handle();
 
-        $this->info("Cycle de vie : {$result['invoiced']} facture(s) émise(s), {$result['suspended']} suspension(s).");
+        $this->info("Cycle de vie : {$result['invoiced']} facture(s) émise(s), {$result['suspended']} suspension(s), {$reminders} relance(s).");
 
         return self::SUCCESS;
     }
