@@ -5,7 +5,9 @@ declare(strict_types=1);
 use App\Models\PlatformUser;
 
 beforeEach(function (): void {
-    $this->actingAs(PlatformUser::factory()->create(), 'platform');
+    $superAdmin = PlatformUser::factory()->create();
+    $session = confirmTwoFactor($superAdmin, 'admin');
+    $this->actingAs($superAdmin, 'platform')->withSession(validTwoFactorSession($session));
 });
 
 it('affiche le référentiel géographique au super-admin', function (): void {

@@ -21,6 +21,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -46,6 +47,7 @@ class User extends Authenticatable implements FilamentUser, HasName, HasTenants
     use LogsTenantActivity;
     use Notifiable;
     use SoftDeletes;
+    use TwoFactorAuthenticatable;
 
     /** @var list<string> */
     protected $guarded = ['id'];

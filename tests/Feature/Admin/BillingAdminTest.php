@@ -8,7 +8,9 @@ use App\Models\Billing\Subscription;
 use App\Models\PlatformUser;
 
 beforeEach(function (): void {
-    $this->actingAs(PlatformUser::factory()->create(), 'platform');
+    $superAdmin = PlatformUser::factory()->create();
+    $session = confirmTwoFactor($superAdmin, 'admin');
+    $this->actingAs($superAdmin, 'platform')->withSession(validTwoFactorSession($session));
 
     Plan::factory()->create();
     Subscription::factory()->create();

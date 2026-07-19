@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 
 /**
  * Compte super-admin plateforme (RG-14). Guard `platform`, panel `admin`, hors
@@ -30,6 +31,7 @@ class PlatformUser extends Authenticatable implements FilamentUser, HasName
     use HasUlids;
     use Notifiable;
     use SoftDeletes;
+    use TwoFactorAuthenticatable;
 
     /** @var list<string> */
     protected $guarded = ['id'];

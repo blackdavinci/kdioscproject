@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\App\Pages\Tenancy\EditOrganizationProfile;
 use App\Http\Middleware\ApplyTenantState;
+use App\Http\Middleware\EnsureAdminTwoFactor;
 use App\Models\Organization;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -21,6 +22,7 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Jeffgreco13\FilamentBreezy\BreezyCore;
 
 class AppPanelProvider extends PanelProvider
 {
@@ -38,7 +40,14 @@ class AppPanelProvider extends PanelProvider
             ->tenantProfile(EditOrganizationProfile::class)
             ->tenantMiddleware([
                 ApplyTenantState::class,
+                EnsureAdminTwoFactor::class,
             ], isPersistent: true)
+            ->plugins([
+                // Mon profil + 2FA (proposée à tous, imposée aux admins via EnsureAdminTwoFactor, RG-09).
+                BreezyCore::make()
+                    ->myProfile(shouldRegisterUserMenu: true, userMenuLabel: 'Mon profil')
+                    ->enableTwoFactorAuthentication(),
+            ])
             ->brandName('KIDIANI OSC')
             ->discoverResources(in: app_path('Filament/App/Resources'), for: 'App\Filament\App\Resources')
             ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\Filament\App\Pages')

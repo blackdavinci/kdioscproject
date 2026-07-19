@@ -18,6 +18,7 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Jeffgreco13\FilamentBreezy\BreezyCore;
 use ShuvroRoy\FilamentSpatieLaravelBackup\FilamentSpatieLaravelBackupPlugin;
 use ShuvroRoy\FilamentSpatieLaravelHealth\FilamentSpatieLaravelHealthPlugin;
 
@@ -39,6 +40,10 @@ class AdminPanelProvider extends PanelProvider
                 // Santé de la plateforme et sauvegardes (§5, écran 10).
                 FilamentSpatieLaravelHealthPlugin::make(),
                 FilamentSpatieLaravelBackupPlugin::make(),
+                // Mon profil + 2FA obligatoire pour le super-admin (RG-09).
+                BreezyCore::make()
+                    ->myProfile(shouldRegisterUserMenu: true, userMenuLabel: 'Mon profil')
+                    ->enableTwoFactorAuthentication(force: true),
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')
