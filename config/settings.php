@@ -1,5 +1,6 @@
 <?php
 
+use App\Settings\BillingSettings;
 use App\Settings\MailSettings;
 use App\Settings\SmsSettings;
 use Spatie\LaravelData\Data;
@@ -18,6 +19,7 @@ return [
     'settings' => [
         MailSettings::class,
         SmsSettings::class,
+        BillingSettings::class,
     ],
 
     /*
