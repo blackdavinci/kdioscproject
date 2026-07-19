@@ -29,12 +29,6 @@ class GeoUnitForm
                                 ->label('Nom')
                                 ->required()
                                 ->maxLength(255),
-                            TextInput::make('pcode')
-                                ->label('P-code')
-                                ->helperText('Clé de synchronisation COD-AB. Pour une unité hors COD-AB, utilisez un préfixe distinctif (ex. GNX…).')
-                                ->required()
-                                ->maxLength(255)
-                                ->unique(ignoreRecord: true),
                         ]),
 
                     Fieldset::make('Hiérarchie')

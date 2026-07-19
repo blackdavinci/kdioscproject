@@ -31,7 +31,6 @@ it('permet d’ajouter manuellement une commune manquante rattachée à sa préf
     Livewire::test(CreateGeoUnit::class)
         ->fillForm([
             'name' => 'Sonfonia',
-            'pcode' => 'GNX0001',
             'level' => 3,
             'parent_id' => $prefecture->id,
             'active' => true,
@@ -41,22 +40,22 @@ it('permet d’ajouter manuellement une commune manquante rattachée à sa préf
 
     $this->assertDatabaseHas('geo_units', [
         'name' => 'Sonfonia',
-        'pcode' => 'GNX0001',
         'level' => 3,
         'parent_id' => $prefecture->id,
         'active' => true,
     ]);
 });
 
-it('refuse un P-code déjà utilisé', function (): void {
-    GeoUnit::factory()->region()->create(['pcode' => 'GN001']);
-
+it('génère automatiquement un P-code distinctif GNX (jamais écrasé par l’import)', function (): void {
     Livewire::test(CreateGeoUnit::class)
         ->fillForm([
-            'name' => 'Doublon',
-            'pcode' => 'GN001',
+            'name' => 'Nouvelle région',
             'level' => 1,
         ])
         ->call('create')
-        ->assertHasFormErrors(['pcode']);
+        ->assertHasNoFormErrors();
+
+    $unit = GeoUnit::where('name', 'Nouvelle région')->firstOrFail();
+
+    expect($unit->pcode)->toStartWith('GNX-');
 });

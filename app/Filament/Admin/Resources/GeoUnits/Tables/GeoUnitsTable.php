@@ -32,10 +32,6 @@ class GeoUnitsTable
                     ->label('Rattachée à')
                     ->placeholder('—')
                     ->searchable(),
-                TextColumn::make('pcode')
-                    ->label('P-code')
-                    ->searchable()
-                    ->toggleable(),
                 TextColumn::make('children_count')
                     ->label('Sous-unités')
                     ->counts('children')
