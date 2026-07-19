@@ -21,7 +21,7 @@ it('redirige un admin sans 2FA vers Mon profil pour la configurer (RG-09)', func
 
     expect($admin->hasConfirmedTwoFactor())->toBeFalse();
 
-    $this->get('/app/'.$this->org->id)
+    $this->get('/app/'.$this->org->slug)
         ->assertRedirectContains('my-profile');
 });
 
@@ -31,5 +31,5 @@ it('n’impose pas la 2FA aux rôles non-admin (RG-09 : proposée seulement)', f
 
     $this->actingAs($agent);
 
-    $this->get('/app/'.$this->org->id)->assertSuccessful();
+    $this->get('/app/'.$this->org->slug)->assertSuccessful();
 });

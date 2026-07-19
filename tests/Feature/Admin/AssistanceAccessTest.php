@@ -62,7 +62,7 @@ it('affiche le bandeau d’assistance aux utilisateurs de l’organisation (RG-1
     $this->actingAs($agent);
     app(TenantContext::class)->set($this->org->id);
 
-    $this->get('/app/'.$this->org->id)
+    $this->get('/app/'.$this->org->slug)
         ->assertSee('accès d’assistance technique', false)
         ->assertSee('KIDIANI Support', false);
 });

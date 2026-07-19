@@ -51,6 +51,18 @@ class Organization extends Model implements HasMedia
         'fiscal_year_start' => 1,
     ];
 
+    protected static function booted(): void
+    {
+        // Le slug (base du sous-domaine et clé de tenant dans l'URL) est toujours
+        // présent : dérivé du nom s'il n'a pas été fourni explicitement.
+        static::creating(function (Organization $organization): void {
+            if (empty($organization->slug)) {
+                $base = $organization->name !== '' ? $organization->name : 'osc';
+                $organization->slug = self::makeUniqueSlug($base);
+            }
+        });
+    }
+
     /**
      * @return array<string, string>
      */

@@ -27,7 +27,8 @@ class OrganizationFactory extends Factory
             'sigle' => strtoupper(fake()->lexify('???')),
             'contacts' => [
                 'email' => fake()->companyEmail(),
-                'phone' => fake()->phoneNumber(),
+                // Format guinéen déterministe et conforme à la validation `tel`.
+                'phone' => '+224 6'.fake()->numerify('## ## ## ##'),
             ],
             'currency' => 'GNF',
             'fiscal_year_start' => 1,

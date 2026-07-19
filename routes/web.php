@@ -4,7 +4,18 @@ use App\Http\Controllers\AcceptInvitationController;
 use App\Http\Controllers\DjomyWebhookController;
 use App\Http\Controllers\PublicBillingController;
 use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\TenantSubdomainController;
 use Illuminate\Support\Facades\Route;
+
+// Porte d'entrée par sous-domaine dédié : {slug}.kidiani.com → espace de l'OSC.
+// Les sous-domaines réservés (app, www, admin, api, mail) sont exclus pour ne
+// jamais masquer l'hôte du panel. Requiert en prod un wildcard DNS *.kidiani.com
+// et un certificat TLS wildcard (configuration serveur, hors code).
+Route::domain('{osc}.'.config('app.tenant_domain'))->group(function (): void {
+    Route::get('/', TenantSubdomainController::class)
+        ->where('osc', '[a-z0-9][a-z0-9-]*')
+        ->name('tenant.subdomain');
+});
 
 Route::get('/', fn () => redirect('/app'));
 
