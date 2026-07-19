@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Organizations\Tables;
 
+use App\Actions\Assistance\EndAssistanceAccess;
+use App\Actions\Assistance\StartAssistanceAccess;
 use App\Actions\Organizations\SetOrganizationStatus;
+use App\Models\AssistanceSession;
 use App\Models\Organization;
+use App\Models\PlatformUser;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
@@ -68,6 +73,38 @@ class OrganizationsTable
                         (new SetOrganizationStatus)->reactivate($record);
 
                         Notification::make()->success()->title('Organisation réactivée')->send();
+                    }),
+
+                // Accès d'assistance 24 h (RG-14).
+                Action::make('startAssistance')
+                    ->label('Accès d’assistance')
+                    ->icon('heroicon-o-lifebuoy')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->modalDescription('Ouvre un accès d’assistance de 24 h à cette organisation. Un bandeau en informe ses utilisateurs et l’action est journalisée.')
+                    ->visible(fn (Organization $record): bool => AssistanceSession::activeFor($record->getKey()) === null)
+                    ->action(function (Organization $record): void {
+                        $operator = Filament::auth()->user();
+
+                        if ($operator instanceof PlatformUser) {
+                            (new StartAssistanceAccess)->handle($record, $operator);
+                            Notification::make()->success()->title('Accès d’assistance ouvert (24 h)')->send();
+                        }
+                    }),
+
+                Action::make('endAssistance')
+                    ->label('Terminer l’assistance')
+                    ->icon('heroicon-o-lifebuoy')
+                    ->color('gray')
+                    ->requiresConfirmation()
+                    ->visible(fn (Organization $record): bool => AssistanceSession::activeFor($record->getKey()) !== null)
+                    ->action(function (Organization $record): void {
+                        $session = AssistanceSession::activeFor($record->getKey());
+
+                        if ($session instanceof AssistanceSession) {
+                            (new EndAssistanceAccess)->handle($session);
+                            Notification::make()->success()->title('Accès d’assistance terminé')->send();
+                        }
                     }),
             ]);
     }

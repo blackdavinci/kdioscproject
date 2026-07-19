@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Tenancy\TenantContext;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Activitylog\Support\CauserResolver;
@@ -30,9 +31,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Auteur d'une activité d'audit (RG-26) : compte tenant (web) ou super-admin (platform).
+        // Auteur d'une activité d'audit (RG-26) : un auteur explicite (causedBy) est
+        // respecté ; sinon compte tenant (web) ou super-admin (platform).
         app(CauserResolver::class)->resolveUsing(
-            fn () => Auth::guard('web')->user() ?? Auth::guard('platform')->user(),
+            fn ($subject) => $subject instanceof Model
+                ? $subject
+                : (Auth::guard('web')->user() ?? Auth::guard('platform')->user()),
         );
 
         // Contrôles de santé de la plateforme (panel super-admin, §5 écran 10).

@@ -14,6 +14,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -48,6 +49,11 @@ class AppPanelProvider extends PanelProvider
                     ->myProfile(shouldRegisterUserMenu: true, userMenuLabel: 'Mon profil')
                     ->enableTwoFactorAuthentication(),
             ])
+            // Bandeau persistant d'accès d'assistance (RG-14).
+            ->renderHook(
+                PanelsRenderHook::BODY_START,
+                fn (): string => view('filament.app.assistance-banner')->render(),
+            )
             ->brandName('KIDIANI OSC')
             ->discoverResources(in: app_path('Filament/App/Resources'), for: 'App\Filament\App\Resources')
             ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\Filament\App\Pages')
