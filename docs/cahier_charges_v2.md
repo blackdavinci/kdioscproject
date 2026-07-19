@@ -1,7 +1,7 @@
 # CAHIER DES CHARGES
 ## Plateforme de Gestion de Projets et de Suivi-Évaluation pour les OSC et ONG en Guinée
 
-**Version 2.1 — Juillet 2026** (remplace la v1.0 de septembre 2025 et la v2.0 de juillet 2026)
+**Version 2.2 — Juillet 2026** (remplace la v1.0 de septembre 2025, la v2.0 et la v2.1 de juillet 2026)
 **Stack :** Laravel 13 · Filament 5 · PostgreSQL/PostGIS · Kobo Toolbox
 **Maître d'œuvre :** KIDIANI SARLU
 
@@ -12,6 +12,8 @@
 La v2.0 était une refonte de la v1.0 suite à une revue critique multi-rôles : périmètre resserré sur la chaîne de valeur (planifier → exécuter → suivre → rapporter) au lieu du périmètre ERP initial ; comptabilité, RH complète et intégrations bancaires remplacées par des équivalents légers ; choix ouverts tranchés (multi-tenancy base unique, PostgreSQL, Kobo, hébergement existant) ; stack actualisé et CI/CD spécifiée ; sections exploitation fondées sur une infrastructure réelle et testée.
 
 **La v2.1 ajoute**, suite à deux revues externes convergentes : la section 1.5 (proposition de valeur et positionnement), la correction du planning (§8.2 — charge revue à la hausse suite à l'enrichissement du périmètre), et l'alignement sur les décisions actées depuis (Filament 5 confirmé, kanban/commentaires/étiquettes, accès bailleur, tâches indépendantes récurrentes, rapport narratif Word, SMS rétrogradé).
+
+**La v2.2 corrige le modèle économique** (décision du maître d'œuvre, juillet 2026) : KDI OSC n'est **pas** une plateforme mutualisée portée par une faîtière, mais un **SaaS commercial édité par Kidiani SARL**, vendu par abonnement aux OSC/ONG, avec **encaissement en ligne via Djomy (mobile money : Orange Money, MTN, Moov) intégré dès le V1**. Ceci révise §1.4, §1.5 (différenciateur n°3), §2.5 (le mobile money entre dans le périmètre) et §10, et introduit un nouvel epic « Administration commerciale & Facturation » (voir `spec_10_administration_commerciale_facturation.md`).
 
 ---
 
@@ -31,8 +33,8 @@ Les OSC et ONG guinéennes gèrent simultanément plusieurs projets financés pa
 ### 1.3 Utilisateurs cibles
 Directeurs et coordonnateurs, chefs de projet, responsables S&E, responsables financiers, agents de terrain et animateurs communautaires, consultants ponctuels, bailleurs invités en lecture seule.
 
-### 1.4 Question à trancher avant le développement : portage et modèle économique
-Une OSC guinéenne moyenne ne peut pas financer seule l'exploitation d'une telle plateforme. Le modèle réaliste : plateforme mutualisée portée par une structure faîtière, un consortium ou un bailleur. Le montage institutionnel (qui porte, qui finance l'exploitation, plan de pérennité) doit être formalisé pendant la phase de cadrage — **condition bloquante** du lancement du développement. Premier pilote pressenti : ABLOGUI ; 2 à 4 OSC pilotes complémentaires à recruter (diversité : grande ONG multi-bailleurs, petite OSC de terrain, structure hors Conakry).
+### 1.4 Modèle économique : SaaS commercial Kidiani (révisé v2.2)
+KDI OSC est un **produit SaaS commercial édité et exploité par Kidiani SARL**. Les OSC/ONG intéressées **souscrivent un abonnement payant** (plan à plat en V1, périodicité annuelle, essai gratuit) pour accéder à la plateforme. L'**encaissement est intégré dès le V1** via l'agrégateur **Djomy** (mobile money guinéen : Orange Money, MTN, Moov), en GNF, sans carte bancaire internationale. Kidiani gère le cycle de vie commercial des tenants (facturation, relances de renouvellement, suspension automatique en cas d'impayé), en plus de la suspension manuelle — voir la spec dédiée « Administration commerciale & Facturation ». Premier pilote pressenti : ABLOGUI ; OSC pilotes complémentaires à recruter (diversité : grande ONG multi-bailleurs, petite OSC de terrain, structure hors Conakry).
 
 ### 1.5 Proposition de valeur et positionnement
 **Positionnement en une phrase :** l'outil de travail *quotidien* des OSC guinéennes — là où les alternatives internationales sont des outils de reporting ouverts en fin de trimestre, cette plateforme est ouverte chaque matin (tâches, activités, budget), et le rapport bailleur devient un sous-produit du travail quotidien.
@@ -40,7 +42,7 @@ Une OSC guinéenne moyenne ne peut pas financer seule l'exploitation d'une telle
 **Différenciateurs :**
 1. **Rapport narratif pré-rempli (Word)** : structure du canevas, tableaux d'indicateurs et de budget remplis, photos insérées — aucune alternative ne livre le document réellement transmis au bailleur. Métrique pilote : temps de production d'un rapport trimestriel avant/après.
 2. **Gestion quotidienne intégrée** (tâches, kanban, rappels, commentaires) : crée l'habitude d'usage, donc la saisie S&E au fil de l'eau et une meilleure qualité de données par effet de bord.
-3. **Prix et modèle** : mutualisation portée par une faîtière → coût marginal par OSC proche de zéro, en GNF, sans carte bancaire internationale (vs milliers de $/an de DevResults, centaines d'€/mois d'ActivityInfo).
+3. **Prix et modèle** : abonnement SaaS **en GNF, payable en mobile money** (Djomy : Orange Money/MTN/Moov), sans carte bancaire internationale ni devise étrangère — un tarif local abordable face aux milliers de $/an de DevResults ou centaines d'€/mois d'ActivityInfo, adapté à la capacité de paiement des OSC guinéennes.
 4. **Ancrage guinéen** : découpage COD-AB natif jusqu'au district + localités propres, bailleurs et ministères locaux, canevas des bailleurs actifs en Guinée, support français de proximité, formation en présentiel.
 5. **Fenêtre bailleur** : accès lecture seule offert par l'ONG sur les projets qu'elle choisit — transparence volontaire, argument de levée de fonds.
 6. **Souveraineté** : code maîtrisé localement, conformité pensée pour la loi guinéenne L/2016/037, réversibilité totale (exports complets).
@@ -64,7 +66,7 @@ Pas de module RH. Comptes utilisateurs à profil léger + entité **membre d'éq
 Tâches rattachées à un projet/une activité **ou indépendantes** (vie de l'organisation : administratif, renouvellements), avec récurrence et rappels ; vue kanban ; commentaires avec mentions @ (scopées à l'organisation) ; étiquettes fermées définies par l'admin ; pièces jointes sur tâches.
 
 ### 2.5 Hors périmètre V1
-Comptabilité générale et RH complètes · intégrations bancaires et mobile money · module d'enquêtes maison (remplacé par Kobo) · application mobile native (V2 si le pilote le justifie ; stack pressenti Flutter) · interfaces écrites en langues nationales (V1 : français simple ; audio/pictogrammes à l'étude en V2) · devis/factures émis (V2, déclinaison entreprise si confirmée) · sous-tâches et dépendances de tâches · GED avancée · flex fields.
+Comptabilité générale et RH complètes · intégrations **bancaires** (le **mobile money d'abonnement via Djomy est, lui, dans le périmètre V1** — cf. §1.4 et spec Facturation) · module d'enquêtes maison (remplacé par Kobo) · application mobile native (V2 si le pilote le justifie ; stack pressenti Flutter) · interfaces écrites en langues nationales (V1 : français simple ; audio/pictogrammes à l'étude en V2) · devis/factures émis (V2, déclinaison entreprise si confirmée) · sous-tâches et dépendances de tâches · GED avancée · flex fields.
 
 ---
 
@@ -179,7 +181,8 @@ Maintenance corrective et sécurité 6 mois post-production ; dépendances au fi
 ## 10. Points restant à trancher au cadrage
 | Point | Décision attendue | Échéance |
 |---|---|---|
-| Portage institutionnel | Structure porteuse et financement de l'exploitation | Fin du cadrage — **bloquant** |
+| Modèle économique | ~~Portage institutionnel~~ → **acté (v2.2) : SaaS commercial Kidiani, abonnement mobile money Djomy** | Acté |
+| Tarification | Prix du plan (GNF/an), durée d'essai, délai de grâce, planning de relances | Paramétrable dans l'écran de configuration (spec Facturation) |
 | OSC pilotes | 3–5 organisations diverses (ABLOGUI acquis) | Début du cadrage |
 | Canevas bailleurs | Les 3 formats V1 | Fin du cadrage |
 | Localisation d'hébergement | Validation juridique L/2016/037 + exigences bailleurs | Fin du cadrage |
