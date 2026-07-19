@@ -13,7 +13,6 @@ use App\Models\GeoUnit;
 use App\Models\Locality;
 use App\Models\Organization;
 use App\Models\PlatformUser;
-use App\Models\Sector;
 use App\Models\Tag;
 use App\Models\TeamMember;
 use App\Models\User;
@@ -35,13 +34,11 @@ class DemoSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->callOnce([RolesSeeder::class, BillingSeeder::class]);
+        $this->callOnce([RolesSeeder::class, NationalReferentialsSeeder::class, BillingSeeder::class]);
 
         if (GeoUnit::count() === 0) {
             Artisan::call('geo:import');
         }
-
-        $this->seedNationalSectors();
 
         PlatformUser::firstOrCreate(
             ['email' => 'super@kdiosc.test'],
@@ -50,17 +47,6 @@ class DemoSeeder extends Seeder
 
         $this->seedOrganization('ABLOGUI', 'ABL', 'ablogui.test');
         $this->seedOrganization('ONG Tinkisso', 'TNK', 'tinkisso.test');
-    }
-
-    protected function seedNationalSectors(): void
-    {
-        $sectors = ['Santé', 'Éducation', 'WASH', 'Gouvernance', 'Agriculture', 'Environnement', 'Protection', 'Moyens d’existence'];
-
-        app(TenantContext::class)->forget();
-
-        foreach ($sectors as $name) {
-            Sector::firstOrCreate(['organization_id' => null, 'name' => $name]);
-        }
     }
 
     protected function seedOrganization(string $name, string $sigle, string $domain): void
@@ -91,7 +77,8 @@ class DemoSeeder extends Seeder
             Tag::firstOrCreate(['organization_id' => $organization->id, 'name' => $tagName], ['color' => $color]);
         }
 
-        foreach ([['Union européenne', 'UE', DonorType::Multilateral], ['USAID', 'USAID', DonorType::Bilateral], ['Fondation locale', null, DonorType::Foundation]] as [$dName, $dSigle, $type]) {
+        // Bailleurs PROPRES à l'OSC (en plus de la base nationale partagée).
+        foreach ([['Fondation '.$sigle, null, DonorType::Foundation], ['Mécène privé local', null, DonorType::Private]] as [$dName, $dSigle, $type]) {
             Donor::firstOrCreate(['organization_id' => $organization->id, 'name' => $dName], ['sigle' => $dSigle, 'type' => $type]);
         }
 

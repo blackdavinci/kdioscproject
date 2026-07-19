@@ -10,8 +10,11 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Données socle du produit (toujours).
         $this->call([
             RolesSeeder::class,
+            NationalReferentialsSeeder::class,
+            BillingSeeder::class,
         ]);
 
         // En développement, peuple aussi 2 organisations de démonstration.
