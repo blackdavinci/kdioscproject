@@ -47,6 +47,12 @@ class InvoicesTable
             ])
             ->defaultSort('issued_at', 'desc')
             ->recordActions([
+                Action::make('receipt')
+                    ->label('Reçu')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->visible(fn (Invoice $record): bool => $record->status === InvoiceStatus::Paid)
+                    ->url(fn (Invoice $record): string => route('billing.receipt', $record), shouldOpenInNewTab: true),
+
                 Action::make('recordPayment')
                     ->label('Enregistrer un paiement')
                     ->icon('heroicon-o-banknotes')

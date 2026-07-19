@@ -56,6 +56,10 @@
                                     <x-filament::button size="sm" wire:click="pay('{{ $invoice->id }}')" wire:loading.attr="disabled">
                                         Payer
                                     </x-filament::button>
+                                @elseif ($invoice->status === \App\Enums\InvoiceStatus::Paid)
+                                    <x-filament::button size="sm" color="gray" tag="a" href="{{ route('billing.receipt', $invoice) }}" target="_blank">
+                                        Reçu
+                                    </x-filament::button>
                                 @endif
                             </td>
                         </tr>
