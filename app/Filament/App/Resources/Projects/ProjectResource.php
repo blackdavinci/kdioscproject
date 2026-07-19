@@ -84,6 +84,7 @@ class ProjectResource extends Resource
             RelationManagers\MembersRelationManager::class,
             RelationManagers\ZonesRelationManager::class,
             RelationManagers\SharesRelationManager::class,
+            RelationManagers\StatusChangesRelationManager::class,
         ];
     }
 
