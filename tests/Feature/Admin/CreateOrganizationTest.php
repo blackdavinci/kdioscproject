@@ -49,6 +49,9 @@ it('le super-admin crée une organisation via l’écran et déclenche l’invit
             'sigle' => 'ONGP',
             'currency' => 'GNF',
             'fiscal_year_start' => 1,
+            'admin_first_name' => 'Aïssatou',
+            'admin_last_name' => 'Barry',
+            'admin_phone' => '+224 620 11 22 33',
             'admin_email' => 'premier.admin@ongpilote.gn',
         ])
         ->call('create')
@@ -56,8 +59,10 @@ it('le super-admin crée une organisation via l’écran et déclenche l’invit
 
     $org = Organization::where('name', 'ONG Pilote')->sole();
 
-    expect(Invitation::where('organization_id', $org->id)->where('email', 'premier.admin@ongpilote.gn')->exists())
-        ->toBeTrue();
+    $invitation = Invitation::where('organization_id', $org->id)->where('email', 'premier.admin@ongpilote.gn')->first();
+    expect($invitation)->not->toBeNull()
+        ->and($invitation->teamMember->full_name)->toBe('Aïssatou Barry')
+        ->and($invitation->teamMember->phone)->toBe('+224 620 11 22 33');
 
     Mail::assertSent(InvitationMail::class);
 });

@@ -23,12 +23,22 @@ class CreateOrganization
      * @param  array<string, mixed>  $attributes
      * @return array{organization: Organization, invitation: ?Invitation}
      */
-    public function handle(array $attributes, string $adminEmail): array
-    {
-        return DB::transaction(function () use ($attributes, $adminEmail): array {
+    public function handle(
+        array $attributes,
+        string $adminEmail,
+        ?string $adminFullName = null,
+        ?string $adminPhone = null,
+    ): array {
+        return DB::transaction(function () use ($attributes, $adminEmail, $adminFullName, $adminPhone): array {
             $organization = Organization::create($attributes);
 
-            $invitation = (new SendInvitation)->handle($organization, $adminEmail, UserRole::Admin);
+            $invitation = (new SendInvitation)->handle(
+                $organization,
+                $adminEmail,
+                UserRole::Admin,
+                fullName: $adminFullName,
+                phone: $adminPhone,
+            );
 
             return ['organization' => $organization, 'invitation' => $invitation];
         });

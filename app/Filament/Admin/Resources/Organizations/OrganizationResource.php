@@ -20,7 +20,13 @@ class OrganizationResource extends Resource
 {
     protected static ?string $model = Organization::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice2;
+
+    protected static ?string $modelLabel = 'organisation';
+
+    protected static ?string $pluralModelLabel = 'organisations';
+
+    protected static ?string $navigationLabel = 'Organisations';
 
     public static function form(Schema $schema): Schema
     {

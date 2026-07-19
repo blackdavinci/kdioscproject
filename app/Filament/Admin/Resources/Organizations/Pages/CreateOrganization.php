@@ -23,10 +23,13 @@ class CreateOrganization extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         $adminEmail = (string) ($data['admin_email'] ?? '');
-        unset($data['admin_email']);
+        $adminFullName = trim(((string) ($data['admin_first_name'] ?? '')).' '.((string) ($data['admin_last_name'] ?? '')));
+        $adminPhone = isset($data['admin_phone']) ? (string) $data['admin_phone'] : null;
+
+        unset($data['admin_email'], $data['admin_first_name'], $data['admin_last_name'], $data['admin_phone']);
 
         ['organization' => $organization, 'invitation' => $invitation] =
-            (new CreateOrganizationAction)->handle($data, $adminEmail);
+            (new CreateOrganizationAction)->handle($data, $adminEmail, $adminFullName, $adminPhone);
 
         if ($invitation === null) {
             Notification::make()

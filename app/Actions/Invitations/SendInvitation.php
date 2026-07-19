@@ -38,6 +38,8 @@ class SendInvitation
         ?User $sentBy = null,
         ?Carbon $accountExpiresAt = null,
         ?TeamMember $linkTo = null,
+        ?string $fullName = null,
+        ?string $phone = null,
     ): ?Invitation {
         $email = mb_strtolower(trim($email));
 
@@ -58,14 +60,16 @@ class SendInvitation
 
         $token = Str::random(48);
 
-        $invitation = DB::transaction(function () use ($organization, $email, $role, $sentBy, $accountExpiresAt, $linkTo, $token): Invitation {
+        $invitation = DB::transaction(function () use ($organization, $email, $role, $sentBy, $accountExpiresAt, $linkTo, $token, $fullName, $phone): Invitation {
             app(TenantContext::class)->set($organization->getKey());
             app(PermissionRegistrar::class)->setPermissionsTeamId($organization->getKey());
 
             // Fiche membre : rattachement à une fiche existante (RG-16) ou création (RG-17).
+            // Le nom réel est renseigné à l'acceptation s'il n'est pas fourni ici.
             $teamMember = $linkTo ?? TeamMember::create([
                 'organization_id' => $organization->getKey(),
-                'full_name' => $email,
+                'full_name' => ($fullName !== null && $fullName !== '') ? $fullName : $email,
+                'phone' => $phone,
             ]);
 
             // Compte en statut `invited`, sans mot de passe (activé à l'acceptation).
