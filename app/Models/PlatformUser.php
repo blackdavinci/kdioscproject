@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\PlatformUserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -22,6 +24,9 @@ use Illuminate\Notifications\Notifiable;
  */
 class PlatformUser extends Authenticatable implements FilamentUser, HasName
 {
+    /** @use HasFactory<PlatformUserFactory> */
+    use HasFactory;
+
     use HasUlids;
     use Notifiable;
     use SoftDeletes;

@@ -34,6 +34,13 @@ class Organization extends Model implements HasMedia
 
     protected $guarded = ['id'];
 
+    /** @var array<string, mixed> */
+    protected $attributes = [
+        'status' => OrganizationStatus::Active->value,
+        'currency' => 'GNF',
+        'fiscal_year_start' => 1,
+    ];
+
     /**
      * @return array<string, string>
      */
