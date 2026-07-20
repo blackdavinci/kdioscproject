@@ -7,7 +7,9 @@ namespace App\Models;
 use App\Enums\LogframeNodeType;
 use App\Models\Concerns\BelongsToOrganization;
 use App\Models\Concerns\LogsTenantActivity;
+use Database\Factories\LogframeNodeFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -29,6 +31,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class LogframeNode extends Model
 {
     use BelongsToOrganization;
+
+    /** @use HasFactory<LogframeNodeFactory> */
+    use HasFactory;
+
     use HasUlids;
     use LogsTenantActivity;
     use SoftDeletes;

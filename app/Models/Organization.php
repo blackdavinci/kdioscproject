@@ -117,6 +117,15 @@ class Organization extends Model implements HasMedia
         return OrganizationNotificationSettings::fromOrganization($this);
     }
 
+    /**
+     * Impose la cohérence des désagrégations de participants (RGA-05b) : si vrai,
+     * un écart somme(axe) ≠ total bloque la saisie ; sinon simple alerte.
+     */
+    public function enforcesDisaggregation(): bool
+    {
+        return (bool) data_get($this->settings, 'enforce_disaggregation', false);
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('logo')->singleFile();
