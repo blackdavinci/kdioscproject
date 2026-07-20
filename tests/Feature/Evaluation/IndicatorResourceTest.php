@@ -11,6 +11,7 @@ use App\Models\Indicator;
 use App\Models\LogframeNode;
 use App\Models\Organization;
 use App\Models\Project;
+use App\Models\User;
 use App\Tenancy\TenantContext;
 use Database\Seeders\RolesSeeder;
 use Filament\Facades\Filament;
@@ -20,7 +21,7 @@ use Spatie\Permission\PermissionRegistrar;
 function bootSe(Organization $org, string $role): void
 {
     app(PermissionRegistrar::class)->setPermissionsTeamId($org->id);
-    $user = \App\Models\User::factory()->create(['organization_id' => $org->id]);
+    $user = User::factory()->create(['organization_id' => $org->id]);
     $user->assignRole($role);
 
     Filament::setCurrentPanel(Filament::getPanel('app'));
