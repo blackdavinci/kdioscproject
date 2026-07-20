@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\App\Resources\Activities;
+namespace App\Filament\App\Resources\Tasks;
 
 use App\Filament\App\RelationManagers\CommentsRelationManager;
-use App\Filament\App\Resources\Activities\Pages\CreateActivity;
-use App\Filament\App\Resources\Activities\Pages\EditActivity;
-use App\Filament\App\Resources\Activities\Pages\ListActivities;
-use App\Filament\App\Resources\Activities\Schemas\ActivityForm;
-use App\Filament\App\Resources\Activities\Tables\ActivitiesTable;
-use App\Models\Activity;
+use App\Filament\App\Resources\Tasks\Pages\CreateTask;
+use App\Filament\App\Resources\Tasks\Pages\EditTask;
+use App\Filament\App\Resources\Tasks\Pages\ListTasks;
+use App\Filament\App\Resources\Tasks\Schemas\TaskForm;
+use App\Filament\App\Resources\Tasks\Tables\TasksTable;
+use App\Models\Task;
 use App\Models\User;
 use BackedEnum;
 use Filament\Facades\Filament;
@@ -21,17 +21,17 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
-class ActivityResource extends Resource
+class TaskResource extends Resource
 {
-    protected static ?string $model = Activity::class;
+    protected static ?string $model = Task::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCalendarDays;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCheckCircle;
 
-    protected static ?string $modelLabel = 'activité';
+    protected static ?string $modelLabel = 'tâche';
 
-    protected static ?string $pluralModelLabel = 'activités';
+    protected static ?string $pluralModelLabel = 'tâches';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Projets';
+    protected static string|UnitEnum|null $navigationGroup = 'Collaboration';
 
     protected static ?int $navigationSort = 3;
 
@@ -39,24 +39,23 @@ class ActivityResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return ActivityForm::configure($schema);
+        return TaskForm::configure($schema);
     }
 
     public static function table(Table $table): Table
     {
-        return ActivitiesTable::configure($table);
+        return TasksTable::configure($table);
     }
 
     /**
-     * Visibilité alignée sur le périmètre projet (RGP-14) : admin et S&E voient
-     * tout ; les autres voient les activités des projets de leur équipe ou dont
-     * ils sont responsables ; le bailleur n'accède pas à la ressource.
+     * Visibilité (RGT-05) : admin et S&E voient tout ; les autres voient les tâches
+     * qui leur sont assignées, qu'ils ont créées, ou des projets de leur équipe.
      *
-     * @return Builder<Activity>
+     * @return Builder<Task>
      */
     public static function getEloquentQuery(): Builder
     {
-        /** @var Builder<Activity> $query */
+        /** @var Builder<Task> $query */
         $query = parent::getEloquentQuery();
         $user = Filament::auth()->user();
 
@@ -69,7 +68,8 @@ class ActivityResource extends Resource
         }
 
         return $query->where(function (Builder $q) use ($user): void {
-            $q->where('responsible_user_id', $user->id)
+            $q->where('assignee_user_id', $user->id)
+                ->orWhere('created_by', $user->id)
                 ->orWhereHas('project.members', fn (Builder $m): Builder => $m->where('user_id', $user->id));
         });
     }
@@ -91,9 +91,9 @@ class ActivityResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListActivities::route('/'),
-            'create' => CreateActivity::route('/create'),
-            'edit' => EditActivity::route('/{record}/edit'),
+            'index' => ListTasks::route('/'),
+            'create' => CreateTask::route('/create'),
+            'edit' => EditTask::route('/{record}/edit'),
         ];
     }
 }

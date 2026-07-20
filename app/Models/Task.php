@@ -9,6 +9,7 @@ use App\Enums\TaskRecurrence;
 use App\Enums\TaskStatus;
 use App\Models\Concerns\BelongsToOrganization;
 use App\Models\Concerns\LogsTenantActivity;
+use App\Models\Contracts\Commentable;
 use Database\Factories\TaskFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,7 +43,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property int|null $reminder_days_before
  * @property string|null $recurrence_group_id
  */
-class Task extends Model implements HasMedia
+class Task extends Model implements Commentable, HasMedia
 {
     use BelongsToOrganization;
 

@@ -7,12 +7,14 @@ namespace App\Models;
 use App\Enums\ActivityStatus;
 use App\Models\Concerns\BelongsToOrganization;
 use App\Models\Concerns\LogsTenantActivity;
+use App\Models\Contracts\Commentable;
 use Database\Factories\ActivityFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
@@ -36,7 +38,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property float|null $longitude
  * @property string|null $recurrence_group_id
  */
-class Activity extends Model implements HasMedia
+class Activity extends Model implements Commentable, HasMedia
 {
     use BelongsToOrganization;
 
@@ -134,6 +136,12 @@ class Activity extends Model implements HasMedia
     public function disaggregations(): HasMany
     {
         return $this->hasMany(ActivityDisaggregation::class);
+    }
+
+    /** @return MorphMany<Comment, $this> */
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
     public function responsibleName(): string
