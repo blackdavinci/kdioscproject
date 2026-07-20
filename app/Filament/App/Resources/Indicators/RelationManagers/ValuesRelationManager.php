@@ -9,6 +9,7 @@ use App\Filament\App\Resources\Indicators\Support\ValueDisaggregation;
 use App\Models\Indicator;
 use App\Models\IndicatorValue;
 use App\Models\Organization;
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -93,6 +94,15 @@ class ValuesRelationManager extends RelationManager
                     ->using(fn (array $data): IndicatorValue => $this->persist($data)),
             ])
             ->recordActions([
+                Action::make('ventilation')
+                    ->label('Ventilation')
+                    ->icon('heroicon-o-chart-pie')
+                    ->color('gray')
+                    ->visible(fn (IndicatorValue $record): bool => $record->disaggregations()->exists())
+                    ->modalHeading('Détail de la ventilation')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Fermer')
+                    ->modalContent(fn (IndicatorValue $record) => view('filament.app.components.value-disaggregation', ['record' => $record])),
                 EditAction::make()
                     ->mutateRecordDataUsing(function (array $data, IndicatorValue $record): array {
                         $data['disagg'] = ValueDisaggregation::load($record);

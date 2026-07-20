@@ -72,6 +72,27 @@ it('enregistre la ventilation d’une valeur via le formulaire (RGSE-04)', funct
         ->and((int) $value->disaggregations()->where('key', 'femme')->value('count'))->toBe(6);
 });
 
+it('restitue la ventilation regroupée par axe (RGSE-04)', function (): void {
+    app(TenantContext::class)->set($this->org->id);
+    $indicator = Indicator::factory()->create([
+        'organization_id' => $this->org->id,
+        'disaggregations' => ['sex' => true, 'age' => false, 'locality' => false],
+    ]);
+    $value = $indicator->values()->create([
+        'period_label' => '2026-T1',
+        'period_start' => now(),
+        'period_end' => now()->addMonths(3),
+        'value' => 10,
+    ]);
+    ValueDisaggregation::sync($value, ['sex' => ['femme' => 6, 'homme' => 4], 'age' => [], 'locality' => []]);
+
+    $breakdown = ValueDisaggregation::breakdown($value);
+
+    expect($breakdown)->toHaveCount(1)
+        ->and($breakdown[0]['dimension'])->toBe('Sexe')
+        ->and($breakdown[0]['rows'])->toHaveCount(2);
+});
+
 it('bloque une ventilation incohérente quand l’OSC l’impose (RGSE-04)', function (): void {
     bootDisagg($this->org);
     $this->org->update(['settings' => ['enforce_disaggregation' => true]]);

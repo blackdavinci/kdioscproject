@@ -166,6 +166,34 @@ class ValueDisaggregation
         return ['sex' => $sex, 'age' => $age, 'locality' => $locality];
     }
 
+    /**
+     * Restitution lisible d'une ventilation, regroupée par axe.
+     *
+     * @return list<array{dimension: string, rows: list<array{label: string, count: int}>}>
+     */
+    public static function breakdown(IndicatorValue $value): array
+    {
+        $localities = Locality::query()->pluck('name', 'id');
+
+        $groups = [
+            DisaggregationDimension::Sex->value => ['dimension' => 'Sexe', 'rows' => []],
+            DisaggregationDimension::Age->value => ['dimension' => 'Tranche d’âge', 'rows' => []],
+            DisaggregationDimension::Locality->value => ['dimension' => 'Localité', 'rows' => []],
+        ];
+
+        foreach ($value->disaggregations()->orderBy('key')->get() as $row) {
+            $label = match ($row->dimension) {
+                DisaggregationDimension::Sex => Sex::tryFrom($row->key)?->label() ?? $row->key,
+                DisaggregationDimension::Age => AgeBracket::tryFrom($row->key)?->label() ?? $row->key,
+                DisaggregationDimension::Locality => (string) ($localities[$row->key] ?? $row->key),
+            };
+
+            $groups[$row->dimension->value]['rows'][] = ['label' => $label, 'count' => (int) $row->count];
+        }
+
+        return array_values(array_filter($groups, fn (array $g): bool => $g['rows'] !== []));
+    }
+
     private static function store(IndicatorValue $value, DisaggregationDimension $dimension, string $key, int $count): void
     {
         if ($count === 0) {
