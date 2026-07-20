@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Enums\DonorType;
+use App\Models\BudgetCategory;
 use App\Models\Donor;
 use App\Models\ProjectRole;
 use App\Models\Sector;
@@ -53,6 +54,13 @@ class NationalReferentialsSeeder extends Seeder
 
         foreach ($projectRoles as $name) {
             ProjectRole::firstOrCreate(['organization_id' => null, 'name' => $name]);
+        }
+
+        // Rubriques budgétaires nationales (RGB-01), extensibles par chaque OSC.
+        $budgetCategories = ['Personnel', 'Équipements', 'Fonctionnement', 'Activités', 'Déplacements', 'Formation', 'Suivi-évaluation', 'Frais administratifs'];
+
+        foreach ($budgetCategories as $name) {
+            BudgetCategory::firstOrCreate(['organization_id' => null, 'name' => $name]);
         }
     }
 }
