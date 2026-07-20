@@ -62,6 +62,7 @@ class AppPanelProvider extends PanelProvider
             // Carte des interventions (RGA-11) : Leaflet bundlé, chargé à la demande.
             ->assets([
                 Js::make('kdi-map', Vite::asset('resources/js/map.js')),
+                Js::make('kdi-kanban', Vite::asset('resources/js/kanban.js')),
             ])
             ->discoverResources(in: app_path('Filament/App/Resources'), for: 'App\Filament\App\Resources')
             ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\Filament\App\Pages')
