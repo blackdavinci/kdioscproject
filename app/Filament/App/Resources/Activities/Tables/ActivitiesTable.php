@@ -5,8 +5,14 @@ declare(strict_types=1);
 namespace App\Filament\App\Resources\Activities\Tables;
 
 use App\Enums\ActivityStatus;
+use App\Filament\App\Resources\Activities\Support\DuplicateActivitySeries;
 use App\Models\Activity;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -54,6 +60,41 @@ class ActivitiesTable
             ])
             ->recordActions([
                 EditAction::make(),
+                ActionGroup::make([
+                    Action::make('sheet')
+                        ->label('Fiche d’activité (PDF)')
+                        ->icon('heroicon-o-document-text')
+                        ->url(fn (Activity $record): string => route('activities.sheet', $record), shouldOpenInNewTab: true),
+                    Action::make('attendance')
+                        ->label('Liste de présence (PDF)')
+                        ->icon('heroicon-o-clipboard-document-list')
+                        ->url(fn (Activity $record): string => route('activities.attendance', $record), shouldOpenInNewTab: true),
+                    Action::make('duplicate')
+                        ->label('Dupliquer en série')
+                        ->icon('heroicon-o-square-2-stack')
+                        ->schema([
+                            Select::make('frequency')
+                                ->label('Fréquence')
+                                ->options([
+                                    'weekly' => 'Hebdomadaire',
+                                    'biweekly' => 'Toutes les 2 semaines',
+                                    'monthly' => 'Mensuelle',
+                                ])
+                                ->default('weekly')
+                                ->required(),
+                            TextInput::make('count')
+                                ->label('Nombre d’occurrences à générer')
+                                ->numeric()
+                                ->minValue(1)
+                                ->maxValue(52)
+                                ->default(3)
+                                ->required(),
+                        ])
+                        ->action(function (Activity $record, array $data): void {
+                            $n = DuplicateActivitySeries::handle($record, $data['frequency'], (int) $data['count']);
+                            Notification::make()->success()->title("{$n} occurrence(s) générée(s)")->send();
+                        }),
+                ]),
             ]);
     }
 }

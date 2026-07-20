@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AcceptInvitationController;
+use App\Http\Controllers\ActivityPdfController;
 use App\Http\Controllers\DjomyWebhookController;
 use App\Http\Controllers\PublicBillingController;
 use App\Http\Controllers\ReceiptController;
@@ -25,6 +26,10 @@ Route::post('/regler', [PublicBillingController::class, 'pay'])->name('billing.s
 
 // Reçu PDF d'un paiement d'abonnement (RGF-17) — autorisation vérifiée dans le contrôleur.
 Route::get('/facturation/recu/{invoice}', [ReceiptController::class, 'download'])->name('billing.receipt');
+
+// Formulaires papier d'une activité (RGA-09) — autorisation vérifiée dans le contrôleur.
+Route::get('/activites/{activity}/fiche', [ActivityPdfController::class, 'sheet'])->name('activities.sheet');
+Route::get('/activites/{activity}/presence', [ActivityPdfController::class, 'attendance'])->name('activities.attendance');
 
 // Webhook Djomy (RGF-13) — signature HMAC vérifiée dans le contrôleur, hors CSRF.
 Route::post('/webhooks/djomy', [DjomyWebhookController::class, 'handle'])->name('webhooks.djomy');
