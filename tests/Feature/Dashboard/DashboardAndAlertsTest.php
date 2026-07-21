@@ -10,10 +10,11 @@ use App\Models\BudgetLine;
 use App\Models\Expense;
 use App\Models\Organization;
 use App\Models\Project;
+use App\Models\ProjectMember;
 use App\Models\Task;
 use App\Models\User;
-use App\Support\DashboardScope;
 use App\Notifications\TaskMailNotice;
+use App\Support\DashboardScope;
 use App\Tenancy\TenantContext;
 use Database\Seeders\RolesSeeder;
 use Filament\Facades\Filament;
@@ -53,7 +54,7 @@ it('scope le tableau de bord à l’organisation pour l’admin (RGD-01)', funct
 it('limite le tableau de bord du chef de projet à ses projets (RGD-01)', function (): void {
     $chef = bootDash($this->org, 'chef_projet');
     $mine = Project::factory()->create(['organization_id' => $this->org->id]);
-    \App\Models\ProjectMember::create(['project_id' => $mine->id, 'user_id' => $chef->id]);
+    ProjectMember::create(['project_id' => $mine->id, 'user_id' => $chef->id]);
     Project::factory()->create(['organization_id' => $this->org->id]); // autre équipe
 
     expect(DashboardScope::seesWholeOrganization())->toBeFalse()

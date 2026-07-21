@@ -35,6 +35,11 @@ class AuditLogResource extends Resource
 
     protected static ?int $navigationSort = 10;
 
+    // Le journal d'audit n'a pas de relation `organization` (modèle spatie étendu) :
+    // on désactive le scoping tenant automatique de Filament et on filtre à la main
+    // dans getEloquentQuery().
+    protected static bool $isScopedToTenant = false;
+
     public static function canAccess(): bool
     {
         $user = Filament::auth()->user();
