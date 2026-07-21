@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\App\Resources\Tasks\Pages;
 
+use App\Actions\Tasks\NotifyTaskAssignment;
 use App\Enums\TaskStatus;
 use App\Filament\App\Resources\Tasks\TaskResource;
+use App\Models\Task;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
@@ -28,5 +30,13 @@ class CreateTask extends CreateRecord
         }
 
         return $data;
+    }
+
+    protected function afterCreate(): void
+    {
+        // Notifie l'assigné (RGD-07), sauf s'il s'assigne lui-même.
+        if ($this->record instanceof Task && $this->record->assignee_user_id !== Filament::auth()->id()) {
+            NotifyTaskAssignment::notify($this->record);
+        }
     }
 }

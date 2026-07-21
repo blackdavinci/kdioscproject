@@ -14,3 +14,6 @@ Schedule::command('billing:advance')->dailyAt('02:00');
 // Rappels d'échéance des tâches (RGT-13) et récap hebdomadaire des retards (RGT-14).
 Schedule::command('tasks:remind')->dailyAt('07:00');
 Schedule::command('tasks:overdue-digest')->weeklyOn(1, '07:30');
+
+// Alertes budgétaires de seuil (RGD-06 / RGB-07).
+Schedule::command('budget:alert')->dailyAt('06:30');

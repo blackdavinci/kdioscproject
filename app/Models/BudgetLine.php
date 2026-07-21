@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 /**
  * Ligne budgétaire d'un projet (RGB-02). Les agrégats (engagé/dépensé/disponible)
@@ -26,6 +27,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $label
  * @property int $amount_gnf
  * @property int $threshold_percent
+ * @property Carbon|null $alert_notified_at
  */
 class BudgetLine extends Model
 {
@@ -53,6 +55,7 @@ class BudgetLine extends Model
         return [
             'amount_gnf' => 'integer',
             'threshold_percent' => 'integer',
+            'alert_notified_at' => 'datetime',
         ];
     }
 
